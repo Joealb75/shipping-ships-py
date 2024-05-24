@@ -1,6 +1,33 @@
 import sqlite3
 import json
 
+
+def create_hauler(request_body):
+    with sqlite3.connect("./shipping.db") as connection:
+        db_cursor = connection.cursor()
+
+        query = """
+        INSERT INTO Hauler
+        (
+        name, 
+        dock_id
+        )
+        VALUES ( ?, ? )
+        """
+        
+        param_values = (request_body["name"], request_body["dock_id"])
+
+        db_cursor.execute(query, param_values)
+        newShipId = db_cursor.lastrowid
+        connection.commit()
+
+    return json.dumps({
+        "id": newShipId,
+        "name": request_body["location"],
+        "hauler_id": request_body["capacity"],
+    })
+
+
 def update_hauler(id, hauler_data):
     with sqlite3.connect("./shipping.db") as conn:
         db_cursor = conn.cursor()
